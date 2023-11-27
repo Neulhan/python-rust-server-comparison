@@ -8,3 +8,6 @@ class Item(models.Model):
 
     class Meta:
         db_table = "items"
+
+    def __str__(self):
+        return f"({self.id}) {self.title}"

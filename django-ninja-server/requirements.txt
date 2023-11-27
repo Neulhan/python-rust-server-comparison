@@ -1,5 +1,4 @@
 django==4.2.7
-uvicorn==0.24.0
+daphne==4.0.0
 django-ninja==1.0.1
-pydantic==2.5.2
 mysqlclient==2.2.0
