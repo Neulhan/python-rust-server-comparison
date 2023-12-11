@@ -1,1 +1,1 @@
-uvicorn src.m
+docker build -t prc-server-django-ninja .

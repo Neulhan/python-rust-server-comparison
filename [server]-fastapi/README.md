@@ -1,1 +1,1 @@
-uvicorn src.main:app
+docker build -t prc-server-fastapi .
