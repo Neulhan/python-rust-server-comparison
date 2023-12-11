@@ -1,1 +1,11 @@
-docker build -t prc-server-fastapi .
+```shell
+make login
+```
+
+```shell
+make build
+```
+
+```shell
+make push
+```
