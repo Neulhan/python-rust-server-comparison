@@ -1,4 +1,3 @@
-
 resource "aws_security_group" "pythonrust_ec2_sg" {
   name        = "pythonrust-ec2-sg"
   description = "pythonrust ecs security group"

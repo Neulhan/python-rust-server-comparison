@@ -9,6 +9,7 @@ resource "aws_db_instance" "prc-mysql" {
   vpc_security_group_ids = [aws_security_group.pythonrust_rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.prc_db_private.name
   skip_final_snapshot    = true
+  publicly_accessible    = true
 }
 
 # resource "aws_db_instance" "prc-postgresql" {
