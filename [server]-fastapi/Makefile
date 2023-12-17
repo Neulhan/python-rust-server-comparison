@@ -12,3 +12,6 @@ build:
 push:
 	@echo "\n$(MAKE_TEXT_SPECIAL)✦ ECR 에 푸시합니다. ✦$(SPECIAL_TEXT_END)\n"
 	docker push 137604332361.dkr.ecr.ap-northeast-2.amazonaws.com/prc-server-fastapi:latest
+
+run:
+	docker run -p8000:80 prc-server-fastapi:latest

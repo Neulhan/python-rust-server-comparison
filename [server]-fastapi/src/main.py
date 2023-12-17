@@ -1,13 +1,28 @@
 from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, CursorResult, Integer, String, Table, insert, select, MetaData, text
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Table,
+    select,
+    MetaData,
+)
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from fastapi import Depends, FastAPI
+from dotenv import load_dotenv, dotenv_values
 
+load_dotenv()
 
-mysql_engine = create_async_engine("mysql+aiomysql://root@localhost/pythonrust")
-MySQLAsyncSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=mysql_engine)
+mysql_engine = create_async_engine(
+    "mysql+aiomysql://"
+    f"{dotenv_values('MYSQL_USR')}:{dotenv_values('MYSQL_PWD')}"
+    f"@{dotenv_values('MYSQL_HOST')}/{dotenv_values('MYSQL_NAME')}"
+)
+
+MySQLAsyncSessionLocal = async_sessionmaker(
+    autocommit=False, autoflush=False, bind=mysql_engine
+)
 # pg_engine = create_async_engine("mysql+aiomysql://root@localhost/pythonrust")
 # PGAsyncSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=pg_engine)
 metadata = MetaData()
@@ -15,17 +30,18 @@ metadata = MetaData()
 items = Table(
     "items",
     metadata,
-     Column("id", Integer, primary_key=True, index=True),
-     Column("title", String(20), nullable=False),
-     Column("description", String(100), nullable=False),
-     Column("price", Integer, nullable=False),
+    Column("id", Integer, primary_key=True, index=True),
+    Column("title", String(20), nullable=False),
+    Column("description", String(100), nullable=False),
+    Column("price", Integer, nullable=False),
 )
+
 
 class Item(BaseModel):
     id: int = Field(alias="id")
     title: str = Field(alias="title")
     description: str = Field(alias="description")
-    price: int  = Field(alias="price")
+    price: int = Field(alias="price")
 
 
 async def get_mysql_session():
@@ -55,12 +71,11 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/item/list/mysql")
-async def api_item_list(start: int, session: MySQLAsyncSessionLocal = Depends(get_mysql_session)) -> list[Item]:
+async def api_item_list(
+    start: int, session: MySQLAsyncSessionLocal = Depends(get_mysql_session)
+) -> list[Item]:
     cursor = await session.execute(
-        select(items)
-        .where(items.c.id <= start)
-        .order_by(items.c.id.desc())
-        .limit(10)
+        select(items).where(items.c.id <= start).order_by(items.c.id.desc()).limit(10)
     )
     return cursor.fetchall()
 
