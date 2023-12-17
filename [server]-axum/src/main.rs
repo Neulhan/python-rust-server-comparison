@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate dotenv_codegen;
+
 use axum::{
     extract::{Query, State},
     routing::get,
@@ -15,7 +18,7 @@ struct AppState {
 async fn main() {
     let my = MySqlPoolOptions::new()
         .max_connections(5)
-        .connect("mysql://root@localhost/pythonrust")
+        .connect(dotenv!("DATABASE_URL"))
         .await
         .unwrap();
     // let pg = MySqlPoolOptions::new()
@@ -31,10 +34,8 @@ async fn main() {
         // .route("/item/list/postgresql", get(get_item_list_postgresql))
         .with_state(shared_state);
 
-    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
 async fn get_item_list_mysql(
@@ -52,7 +53,6 @@ async fn get_item_list_mysql(
     Json(GetItemListResBody { items })
 }
 
-
 // async fn get_item_list_postgresql(
 //     Query(params): Query<HashMap<String, String>>,
 //     State(state): State<Arc<AppState>>,
@@ -68,14 +68,13 @@ async fn get_item_list_mysql(
 //     Json(GetItemListResBody { items })
 // }
 
-
 #[derive(serde::Serialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 struct Item {
-    id: i64,
-    title: String,
-    description: String,
-    price: i32,
+    id: Option<i32>,
+    title: Option<String>,
+    description: Option<String>,
+    price: Option<i32>,
 }
 
 #[derive(serde::Serialize)]
