@@ -7,7 +7,7 @@ resource "aws_db_instance" "prc-mysql" {
   username               = var.database_usr
   password               = var.database_pwd
   vpc_security_group_ids = [aws_security_group.pythonrust_rds_sg.id]
-  db_subnet_group_name   = aws_db_subnet_group.prc_db_private.name
+  db_subnet_group_name   = aws_db_subnet_group.prc_public.name
   skip_final_snapshot    = true
   publicly_accessible    = true
 }
